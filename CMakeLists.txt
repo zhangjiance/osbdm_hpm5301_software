@@ -3,6 +3,8 @@
 
 cmake_minimum_required(VERSION 3.13)
 
+set(APP_NAME "osbdm-hpm-port")
+
 # set(HPM_BUILD_TYPE "flash_xip")
 set(HPM_BUILD_TYPE "flash_uf2")
 
