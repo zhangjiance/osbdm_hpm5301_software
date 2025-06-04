@@ -27,6 +27,7 @@ extern "C" {
   宏定义
 *******************************************************************************/
 
+#undef BOARD_NAME
 #define BOARD_NAME "Embedded Tools"
 
 /** \brief PWR 引脚定义 */
@@ -41,8 +42,8 @@ extern "C" {
 
 /** \brief TRST 引脚定义 */
 #define TRST_GPIO_CTRL  HPM_FGPIO
-#define TRST_GPIO_INDEX GPIO_OE_GPIOA
-#define TRST_GPIO_PIN   2
+#define TRST_GPIO_INDEX GPIO_OE_GPIOB
+#define TRST_GPIO_PIN   14
 
 /** \brief TDI_DIR 引脚定义 */
 #define TDI_DIR_GPIO_CTRL  HPM_FGPIO
@@ -51,8 +52,8 @@ extern "C" {
 
 /** \brief LED_GREEN 引脚定义 */
 #define LED_GREEN_GPIO_CTRL  HPM_FGPIO
-#define LED_GREEN_GPIO_INDEX GPIO_OE_GPIOA
-#define LED_GREEN_GPIO_PIN   8
+#define LED_GREEN_GPIO_INDEX GPIO_OE_GPIOY
+#define LED_GREEN_GPIO_PIN   0
 
 /** \brief LED_RED 引脚定义 */
 #define LED_RED_GPIO_CTRL  HPM_FGPIO
@@ -66,8 +67,8 @@ extern "C" {
 
 /** \brief TCK 引脚定义 */
 #define TCK_GPIO_CTRL  HPM_FGPIO
-#define TCK_GPIO_INDEX GPIO_OE_GPIOA
-#define TCK_GPIO_PIN   27
+#define TCK_GPIO_INDEX GPIO_OE_GPIOB
+#define TCK_GPIO_PIN   11
 
 /** \brief TMS 引脚定义 */
 #define TMS_GPIO_CTRL  HPM_FGPIO
@@ -81,8 +82,8 @@ extern "C" {
 
 /** \brief SRST_OUT 引脚定义 */
 #define SRST_OUT_GPIO_CTRL  HPM_FGPIO
-#define SRST_OUT_GPIO_INDEX GPIO_OE_GPIOA
-#define SRST_OUT_GPIO_PIN   31
+#define SRST_OUT_GPIO_INDEX GPIO_OE_GPIOB
+#define SRST_OUT_GPIO_PIN   15
 
 /** \brief ADC_VREF 引脚定义 */
 #define ADC_VREF_GPIO_CTRL  HPM_FGPIO
@@ -117,62 +118,159 @@ extern "C" {
 /******************************************************************************/
 
 /** \brief 设置 PWR 开关 */
-#define PWR_ON()  gpio_set_port_high_with_mask(PWR_GPIO_CTRL, PWR_GPIO_INDEX, 1 << PWR_GPIO_PIN)
-#define PWR_OFF() gpio_set_port_low_with_mask(PWR_GPIO_CTRL, PWR_GPIO_INDEX, 1 << PWR_GPIO_PIN)
+#define PWR_ON()  \
+{ \
+  gpio_set_port_high_with_mask(PWR_GPIO_CTRL, PWR_GPIO_INDEX, 1 << PWR_GPIO_PIN); \
+   __asm volatile("fence io, io"); \
+}
+
+#define PWR_OFF() \
+{ \
+  gpio_set_port_low_with_mask(PWR_GPIO_CTRL, PWR_GPIO_INDEX, 1 << PWR_GPIO_PIN);\
+   __asm volatile("fence io, io");  \
+}
 
 /** \brief 设置 TRST_DIR 方向 */
-#define TRST_DIR_OUT() gpio_set_port_high_with_mask(TRST_DIR_GPIO_CTRL, TRST_DIR_GPIO_INDEX, 1 << TRST_DIR_GPIO_PIN)
+#define TRST_DIR_OUT() \
+{ \
+  gpio_set_port_high_with_mask(TRST_DIR_GPIO_CTRL, TRST_DIR_GPIO_INDEX, 1 << TRST_DIR_GPIO_PIN); \
+   __asm volatile("fence io, io");  \
+}
+
 #define TRST_DIR_IN()  gpio_set_port_low_with_mask(TRST_DIR_GPIO_CTRL, TRST_DIR_GPIO_INDEX, 1 << TRST_DIR_GPIO_PIN)
 
 /** \brief 设置 TRST 是否有效 */
-#define TRST_DEASSERT() gpio_set_port_high_with_mask(TRST_GPIO_CTRL, TRST_GPIO_INDEX, 1 << TRST_GPIO_PIN)
-#define TRST_ASSERT()   gpio_set_port_low_with_mask(TRST_GPIO_CTRL, TRST_GPIO_INDEX, 1 << TRST_GPIO_PIN)
+#define TRST_DEASSERT() \
+{ \
+  gpio_set_port_high_with_mask(TRST_GPIO_CTRL, TRST_GPIO_INDEX, 1 << TRST_GPIO_PIN); \
+   __asm volatile("fence io, io");  \
+}
+
+#define TRST_ASSERT()   \
+{ \
+  gpio_set_port_low_with_mask(TRST_GPIO_CTRL, TRST_GPIO_INDEX, 1 << TRST_GPIO_PIN);\
+   __asm volatile("fence io, io"); \
+}
 
 /** \brief 设置 TDI_DIR 方向 */
-#define TDI_DIR_OUT() gpio_set_port_high_with_mask(TDI_DIR_GPIO_CTRL, TDI_DIR_GPIO_INDEX, 1 << TDI_DIR_GPIO_PIN)
+#define TDI_DIR_OUT() \
+{ \
+  gpio_set_port_high_with_mask(TDI_DIR_GPIO_CTRL, TDI_DIR_GPIO_INDEX, 1 << TDI_DIR_GPIO_PIN);\
+   __asm volatile("fence io, io");  \
+}
+
 #define TDI_DIR_IN()  gpio_set_port_low_with_mask(TDI_DIR_GPIO_CTRL, TDI_DIR_GPIO_INDEX, 1 << TDI_DIR_GPIO_PIN)
 
 /** \brief 设置 LED_GREEN 开关 */
-#define LED_GREEN_OFF() gpio_set_port_high_with_mask(LED_GREEN_GPIO_CTRL, LED_GREEN_GPIO_INDEX, 1 << LED_GREEN_GPIO_PIN)
-#define LED_GREEN_ON()  gpio_set_port_low_with_mask(LED_GREEN_GPIO_CTRL, LED_GREEN_GPIO_INDEX, 1 << LED_GREEN_GPIO_PIN)
+#define LED_GREEN_OFF() 
+// {
+//   gpio_set_port_high_with_mask(LED_GREEN_GPIO_CTRL, LED_GREEN_GPIO_INDEX, 1 << LED_GREEN_GPIO_PIN)
+//    __asm volatile("fence io, io");
+// }
+
+#define LED_GREEN_ON()  
+// {
+//   gpio_set_port_low_with_mask(LED_GREEN_GPIO_CTRL, LED_GREEN_GPIO_INDEX, 1 << LED_GREEN_GPIO_PIN)
+//    __asm volatile("fence io, io");
+// }
 
 /** \brief 设置 LED_RED 开关 */
-#define LED_RED_OFF() gpio_set_port_high_with_mask(LED_RED_GPIO_CTRL, LED_RED_GPIO_INDEX, 1 << LED_RED_GPIO_PIN)
-#define LED_RED_ON()  gpio_set_port_low_with_mask(LED_RED_GPIO_CTRL, LED_RED_GPIO_INDEX, 1 << LED_RED_GPIO_PIN)
+#define LED_RED_OFF() 
+// {
+//   gpio_set_port_high_with_mask(LED_RED_GPIO_CTRL, LED_RED_GPIO_INDEX, 1 << LED_RED_GPIO_PIN)
+//    __asm volatile("fence io, io");
+// }
+
+#define LED_RED_ON()  
+// {
+//   gpio_set_port_low_with_mask(LED_RED_GPIO_CTRL, LED_RED_GPIO_INDEX, 1 << LED_RED_GPIO_PIN)
+//    __asm volatile("fence io, io");
+// }
 
 /** \brief 设置 TCK 输出电平 */
-#define TCK_SET()   gpio_set_port_high_with_mask(TCK_GPIO_CTRL, TCK_GPIO_INDEX, 1 << TCK_GPIO_PIN)
-#define TCK_RESET() gpio_set_port_low_with_mask(TCK_GPIO_CTRL, TCK_GPIO_INDEX, 1 << TCK_GPIO_PIN)
+#define TCK_SET()   \
+{ \
+  gpio_set_port_high_with_mask(TCK_GPIO_CTRL, TCK_GPIO_INDEX, 1 << TCK_GPIO_PIN);\
+   __asm volatile("fence io, io"); \
+}
+
+#define TCK_RESET() \
+{ \
+  gpio_set_port_low_with_mask(TCK_GPIO_CTRL, TCK_GPIO_INDEX, 1 << TCK_GPIO_PIN);\
+   __asm volatile("fence io, io"); \
+}
 
 /** \brief 设置 TMS 输出电平 */
-#define TMS_SET()   gpio_set_port_high_with_mask(TMS_GPIO_CTRL, TMS_GPIO_INDEX, 1 << TMS_GPIO_PIN)
-#define TMS_RESET() gpio_set_port_low_with_mask(TMS_GPIO_CTRL, TMS_GPIO_INDEX, 1 << TMS_GPIO_PIN)
+#define TMS_SET()   \
+{ \
+  gpio_set_port_high_with_mask(TMS_GPIO_CTRL, TMS_GPIO_INDEX, 1 << TMS_GPIO_PIN);\
+   __asm volatile("fence io, io"); \
+}
+
+#define TMS_RESET() \
+{ \
+  gpio_set_port_low_with_mask(TMS_GPIO_CTRL, TMS_GPIO_INDEX, 1 << TMS_GPIO_PIN);\
+   __asm volatile("fence io, io"); \
+}
 
 /** \brief 设置 TMS_DIR 方向 */
-#define TMS_DIR_OUT() gpio_set_port_high_with_mask(TMS_DIR_GPIO_CTRL, TMS_DIR_GPIO_INDEX, 1 << TMS_DIR_GPIO_PIN)
+#define TMS_DIR_OUT() \
+{ \
+  gpio_set_port_high_with_mask(TMS_DIR_GPIO_CTRL, TMS_DIR_GPIO_INDEX, 1 << TMS_DIR_GPIO_PIN); \
+   __asm volatile("fence io, io"); \
+}
+
 #define TMS_DIR_IN()  gpio_set_port_low_with_mask(TMS_DIR_GPIO_CTRL, TMS_DIR_GPIO_INDEX, 1 << TMS_DIR_GPIO_PIN)
 
 /** \brief 读取/设置 SRST_OUT 是否有效 */
-#define SRST_OUT_GET()      gpio_get_pin_output_status(SRST_OUT_GPIO_CTRL, SRST_OUT_GPIO_INDEX, SRST_OUT_GPIO_PIN)
-#define SRST_OUT_ASSERT()   gpio_set_port_high_with_mask(SRST_OUT_GPIO_CTRL, SRST_OUT_GPIO_INDEX, 1 << SRST_OUT_GPIO_PIN)
-#define SRST_OUT_DEASSERT() gpio_set_port_low_with_mask(SRST_OUT_GPIO_CTRL, SRST_OUT_GPIO_INDEX, 1 << SRST_OUT_GPIO_PIN)
+#define SRST_OUT_GET() gpio_get_pin_output_status(SRST_OUT_GPIO_CTRL, SRST_OUT_GPIO_INDEX, SRST_OUT_GPIO_PIN)
+
+#define SRST_OUT_ASSERT()   \
+{ \
+  gpio_set_port_high_with_mask(SRST_OUT_GPIO_CTRL, SRST_OUT_GPIO_INDEX, 1 << SRST_OUT_GPIO_PIN);\
+   __asm volatile("fence io, io"); \
+}
+
+#define SRST_OUT_DEASSERT() \
+{ \
+  gpio_set_port_low_with_mask(SRST_OUT_GPIO_CTRL, SRST_OUT_GPIO_INDEX, 1 << SRST_OUT_GPIO_PIN); \
+   __asm volatile("fence io, io"); \
+}
 
 /** \brief 设置 SRST_DIR 方向 */
-#define SRST_DIR_OUT() gpio_set_port_high_with_mask(SRST_DIR_GPIO_CTRL, SRST_DIR_GPIO_INDEX, 1 << SRST_DIR_GPIO_PIN)
+#define SRST_DIR_OUT() \
+{ \
+  gpio_set_port_high_with_mask(SRST_DIR_GPIO_CTRL, SRST_DIR_GPIO_INDEX, 1 << SRST_DIR_GPIO_PIN);\
+   __asm volatile("fence io, io"); \
+}
 #define SRST_DIR_IN()  gpio_set_port_low_with_mask(SRST_DIR_GPIO_CTRL, SRST_DIR_GPIO_INDEX, 1 << SRST_DIR_GPIO_PIN)
 
 /** \brief 获取 TDO 输入电平 */
 #define TDO_GET() (gpio_read_port(TDO_GPIO_CTRL, TDO_GPIO_INDEX) & (1 << TDO_GPIO_PIN))
 
 /** \brief 设置 TDI 输出电平 */
-#define TDI_SET()   gpio_set_port_high_with_mask(TDI_GPIO_CTRL, TDI_GPIO_INDEX, 1 << TDI_GPIO_PIN)
-#define TDI_RESET() gpio_set_port_low_with_mask(TDI_GPIO_CTRL, TDI_GPIO_INDEX, 1 << TDI_GPIO_PIN)
+#define TDI_SET()   \
+{ \
+  gpio_set_port_high_with_mask(TDI_GPIO_CTRL, TDI_GPIO_INDEX, 1 << TDI_GPIO_PIN); \
+   __asm volatile("fence io, io");  \
+}
+
+#define TDI_RESET() \
+{ \
+  gpio_set_port_low_with_mask(TDI_GPIO_CTRL, TDI_GPIO_INDEX, 1 << TDI_GPIO_PIN);\
+   __asm volatile("fence io, io");  \
+}
 
 /** \brief 获取 SRST_IN 是否有效 */
 #define SRST_IN_GET() (!(gpio_read_port(SRST_IN_GPIO_CTRL, SRST_IN_GPIO_INDEX) & (1 << SRST_IN_GPIO_PIN)))
 
 /** \brief 设置 TCK_DIR 方向 */
-#define TCK_DIR_OUT() gpio_set_port_high_with_mask(TCK_DIR_GPIO_CTRL, TCK_DIR_GPIO_INDEX, 1 << TCK_DIR_GPIO_PIN)
+#define TCK_DIR_OUT() \
+{ \
+  gpio_set_port_high_with_mask(TCK_DIR_GPIO_CTRL, TCK_DIR_GPIO_INDEX, 1 << TCK_DIR_GPIO_PIN); \
+   __asm volatile("fence io, io");  \
+}
+
 #define TCK_DIR_IN()  gpio_set_port_low_with_mask(TCK_DIR_GPIO_CTRL, TCK_DIR_GPIO_INDEX, 1 << TCK_DIR_GPIO_PIN)
 
 /******************************************************************************/

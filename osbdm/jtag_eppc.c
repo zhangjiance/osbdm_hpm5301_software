@@ -350,26 +350,26 @@ void t_set_clock (uint32_t clock)
 // 24 个 NOP() 实测 4.5MHz 左右
 void delay (void)
 {
-    NOP();
-    NOP();
-    NOP();
-    NOP();
-    NOP();
-    NOP();
-    NOP();
-    NOP();
-    NOP();
-    NOP();
-    NOP();
-    NOP();
-    NOP();
-    NOP();
-    NOP();
-    NOP();
-    NOP();
-    NOP();
-    NOP();
-    NOP();
+    // NOP();
+    // NOP();
+    // NOP();
+    // NOP();
+    // NOP();
+    // NOP();
+    // NOP();
+    // NOP();
+    // NOP();
+    // NOP();
+    // NOP();
+    // NOP();
+    // NOP();
+    // NOP();
+    // NOP();
+    // NOP();
+    // NOP();
+    // NOP();
+    // NOP();
+    // NOP();
     // NOP();
     // NOP();
     // NOP();

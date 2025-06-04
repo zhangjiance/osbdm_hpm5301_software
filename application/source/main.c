@@ -12,6 +12,7 @@
   头文件包含
 *******************************************************************************/
 
+#include "board.h"
 #include "board_custom.h"
 #include "board_id.h"
 #include "cmd_processing.h"
@@ -19,6 +20,7 @@
 #include "hpm_gpiom_drv.h"
 #include "targetAPI.h"
 #include "usb_osbdm.h"
+#include "HSLink_Pro_expansion.h"
 
 #include <stdio.h>
 
@@ -48,20 +50,6 @@ static uint32_t _g_vref_voltage = 0;
 /*******************************************************************************
   本地函数定义
 *******************************************************************************/
-
-/**
- * \brief 处理 VIO 电压任务
- */
-static void _vio_process (void)
-{
-    int32_t voltage;
-
-    voltage = vref_voltage_get();
-    if (voltage >= 0) {
-        _g_vref_voltage = voltage;
-        vio_pwm_duty_set(VIO_PWM_DUTY_GET(voltage));
-    }
-}
 
 /**
  * \brief 处理 LED ERROR 任务
@@ -124,12 +112,12 @@ static void _led_status_process (void)
  */
 int main (void)
 {
+    /* 初始化 USB */
     /* 板级初始化 */
     board_custom_init();
-
-    /* 初始化 USB */
+    
     usb_osbdm_init();
-
+    
     /* 点亮 LED_GREEN */
     LED_GREEN_ON();
 
@@ -137,11 +125,9 @@ int main (void)
     read_board_id();
     read_osbdm_id();
     t_debug_init();
+    board_timer_create(100, hslink_timer_process);
 
     while (1) {
-        /* 处理 VIO 电压任务 */
-        _vio_process();
-
         /* 处理 LED ERROR 任务 */
         _led_error_process();
 
